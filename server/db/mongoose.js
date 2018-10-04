@@ -6,7 +6,7 @@ let db = {
 };
 
 mongoose.Promise = global.Promise;
-mongoose.connect(db.localhost || db.mlab, {useNewUrlParser: true});
+mongoose.connect(db.mlab || db.localhost, {useNewUrlParser: true});
 
 // mongoose: mongoose.. ES6 syntax:
 module.exports = {mongoose};

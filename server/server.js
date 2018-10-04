@@ -24,7 +24,7 @@ app.post('/todos', (req, res) => {
   // Status 400 : Bad Request
   todo.save().then((doc) => {
     res.send(doc);
-  }, (e) => {
+  }).catch((e) => {
     res.status(400).send(e);
   });
 });
@@ -34,7 +34,7 @@ app.get('/todos', (req, res) => {
     // res.send(todos) will not be ideal since it is sending an array. Wouldn't be able to attach additional properties
     // EX: res.send({todos: todos, code: 'asdf'})
     res.send({todos});
-  }, (e) => {
+  }).catch((e) => {
     res.status(400).send(e);
   });
 });

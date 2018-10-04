@@ -19,7 +19,7 @@ beforeEach((done) => {
   // .remove() similar to mongodb native remove.. by passing it an empty object it will wipe all our current todos collection
   Todo.remove( {} ).then(() => {
     Todo.insertMany(todos);
-  }).then(() => done());
+  }).then(() => done()).catch((e) => console.log(e));
 });
 
 describe('POST /todos', () => {
