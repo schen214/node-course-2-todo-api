@@ -10,9 +10,9 @@ User.findById('5bb38936c988a60abc4a54b9').then((todo) => {
     return console.log('Unable to find Users');
   }
   console.log('Todo', todo);
-}, (e) => copnsole.log(e));
+}, (e) => console.log(e));
 
-// var id = '5bb4fabfb0a108283cc83d6b11';
+// var id = '5bb4fabfb0a108283cc83d6b';
 
 // .isValid() takes the ObjectID and returns true or false for their validity.
 // if (!ObjectID.isValid(id)) {
