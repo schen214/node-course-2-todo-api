@@ -7,7 +7,7 @@ var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
 var app = express();
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 
 // setting up middleware with a method of body-parser's
 // bodyParser.json() will return a function that acts as middleware to send JSON to our express app.. converts JSON to an object
@@ -56,6 +56,23 @@ app.get('/todos/:id', (req, res) => {
   }).catch((e) => {
     res.status(400).send();
   });
+});
+
+// .delete() takes 1st argument the route, and then a callback
+app.delete('/todos/:id', (req, res) => {
+  var id = req.params.id;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  Todo.findByIdAndRemove(id).then((todo) => {
+    if (!todo) {
+      return res.status(404).send();
+    }
+
+    res.send({todo});
+  }).catch((e) => res.status(400).send());
 });
 
 app.listen(port, () => {
