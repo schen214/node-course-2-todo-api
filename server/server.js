@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
@@ -80,6 +81,37 @@ app.delete('/todos/:id', (req, res) => {
   //
   //   res.send({todo});
   // }).catch((e) => res.status(400).send());
+});
+
+// UPDATE Route:
+app.patch('/todos/:id', (req, res) => {
+  var id = req.params.id;
+  // Since we do not want the user to be able to update the 'completed at' property (Program will take care of that once the 'completed' property is set), we will use lodash to help
+  // .pick() creates an object composed of the objects properties predicate truthy for.. 1st argument is the source object, and 2nd arg is an array of properties to be picked:
+  var body = _.pick(req.body, ['text', 'completed']);
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  // Set 'completedAt' once 'completed' is true..
+  if (_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  // findByIdAndUpdatE(): takes the ID as 1st arg (doesnt have to be ObjectID), 2nd arg takes 'update' options (what you are updating), 3rd arg takes an 'options' arg ('new' if set to true: returns the updated doc instead of original doc)
+  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+    if (!todo) {
+      return res.status(404).send();
+    }
+
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send();
+  });
 });
 
 app.listen(port, () => {
