@@ -102,7 +102,7 @@ app.patch('/todos/:id', (req, res) => {
     body.completedAt = null;
   }
 
-  // findByIdAndUpdatE(): takes the ID as 1st arg (doesnt have to be ObjectID), 2nd arg takes 'update' options (what you are updating), 3rd arg takes an 'options' arg ('new' if set to true: returns the updated doc instead of original doc)
+  // findByIdAndUpdate(): takes the ID as 1st arg (doesnt have to be ObjectID), 2nd arg takes 'update' options (what you are updating), 3rd arg takes an 'options' arg ('new' if set to true: returns the updated doc instead of original doc)
   Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
     if (!todo) {
       return res.status(404).send();

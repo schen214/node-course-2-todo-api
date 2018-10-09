@@ -6,8 +6,8 @@ let db = {
 };
 
 mongoose.Promise = global.Promise;
-mongoose.connect(db.mlab || db.localhost, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect'));
-// mongoose.connect(db.localhost || db.mlab, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect'));
+// mongoose.connect(db.mlab || db.localhost, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect'));
+mongoose.connect(db.localhost || db.mlab, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect'));
 
 // mongoose: mongoose.. ES6 syntax:
 module.exports = {mongoose};
