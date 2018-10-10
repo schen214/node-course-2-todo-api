@@ -1,3 +1,6 @@
+
+require('./config/config');
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,7 +11,7 @@ var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
 var app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 // setting up middleware with a method of body-parser's
 // bodyParser.json() will return a function that acts as middleware to send JSON to our express app.. converts JSON to an object
@@ -86,7 +89,7 @@ app.delete('/todos/:id', (req, res) => {
 // UPDATE Route:
 app.patch('/todos/:id', (req, res) => {
   var id = req.params.id;
-  // Since we do not want the user to be able to update the 'completed at' property (Program will take care of that once the 'completed' property is set), we will use lodash to help
+  // Since we do not want the user to be able to update the 'completedAt' property (Program will take care of that once the 'completed' property is set), we will use lodash to help
   // .pick() creates an object composed of the objects properties predicate truthy for.. 1st argument is the source object, and 2nd arg is an array of properties to be picked:
   var body = _.pick(req.body, ['text', 'completed']);
 
