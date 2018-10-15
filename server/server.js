@@ -117,6 +117,23 @@ app.patch('/todos/:id', (req, res) => {
   });
 });
 
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User({
+    email: body.email,
+    password: body.password
+  });
+  // shorthand for above: var user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    // whenever a header begins with 'x-' it means its a custom header created by/for us and not native to HTTP
+    // Send token back as http header so we can get access to it
+    res.header('x-auth', token).send(user)
+  }).catch((e) => res.status(400).send(e));
+});
+
 app.listen(port, () => {
   console.log(`Started up on port ${port}`);
 });

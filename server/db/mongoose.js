@@ -9,9 +9,12 @@ const mongoose = require('mongoose');
 //   mlab: 'mongodb://ubarkandibite:Cha1rzard@ds123173.mlab.com:23173/node-todo-api'
 // };
 mongoose.Promise = global.Promise;
-// mongoose.set('useCreateIndex', true);
-// mongoose.set('useFindAndModify', false);
-mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect'));
+
+// Gets rid of deprecated warnings..
+mongoose.set('useCreateIndex', true);
+mongoose.set('useFindAndModify', false);
+
+mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect to database'));
 // mongoose.connect(db.localhost || db.mlab, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect'));
 
 // mongoose: mongoose.. ES6 syntax:
