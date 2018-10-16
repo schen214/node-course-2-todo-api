@@ -34,8 +34,10 @@ var UserSchema = new mongoose.Schema({
   }]
 });
 
-// .methods is an object where we can create/add any 'instance methods' we like
-// toObject() converts a 'document' into a JS object which can then be stored in MongoDB
+// .methods is an object where we can create/override any 'instance methods' we like
+// Override the toJSON method so we only return  properties that are needed and hide those that are not needed(ex: email, id);
+// toJSON() will automatically be called whenever a object (mongoose model) is converted to a JSON value (stringified)
+// toObject() converts a 'document' into a regular JS object
 UserSchema.methods.toJSON = function () {
   // var user = this; Used so we wont forget what 'this' is ..
   var userObject = this.toObject();
@@ -57,6 +59,29 @@ UserSchema.methods.generateAuthToken = function () {
   });
 };
 
+// .statics is a object, similiar to .methods, with the difference being that every method you add, it becomes a 'model method' instead of 'instance method'
+UserSchema.statics.findByToken = function (token) {
+  // var User = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token, 'abc123');
+  } catch (e) {
+    // return new Promise((resolve, reject) => {
+    //   reject();
+    // shorthand for above:
+    return Promise.reject('INVALID TOKEN');
+  }
+
+
+  // We have to add  quotes around nested objects in 'key' values
+  return this.findOne({
+    _id: decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+
+  });
+};
 
 var User = mongoose.model('User', UserSchema);
 
