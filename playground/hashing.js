@@ -1,17 +1,38 @@
 const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
+// HASHING PASSWORD:
+var password = '123abc!';
+
+//.genSalt() salts and hashes password, 1st argument is number of rounds you want to use to generate the salt. Some use high rounds intentionally so if one tries to guess password with a list of hashed pws, itll take longer to test each pw. 2nd arg callback
+bcrypt.genSalt(10, (err, salt) => {
+  // .hash() takes 3 args, 1st is password to hash, 2nd is 'salt', 3rd is callback
+  bcrypt.hash(password, salt, (err, hash) => {
+    console.log(hash);
+  });
+})
+
+var hashedPassword = '$2a$10$Tcu4P69Z4BSbJd4OqPj9X.KSFcmZB.9NtOTgQPo0R47AUgzUasSHy';
+
+// .compare(): Comparse if hashed password is same as plain text password. 1st arg is plain password, 2nd is hashed value, 3rd is callback where res is either true/false
+bcrypt.compare(password, hashedPassword, (err, res) => {
+  console.log(res);
+});
+
+
+// HASHING TOKEN:
 // jwt.sign(): takes 1st arg the object (ex: data: {id:4}) and 2nd arg is the 'salt' and signs it. Creates the hash and returns the token value as a object.
 // jwt.verify() takes the token and secret and decodes it to verify that data has not been manipualted.
-var data = {
-  id: 10
-};
-
-var token = jwt.sign(data, '123abc');
-console.log(token);
-
-var decoded = jwt.verify(token, '123abc');
-console.log('decoded', decoded);
+// var data = {
+//   id: 10
+// };
+//
+// var token = jwt.sign(data, '123abc');
+// console.log(token);
+//
+// var decoded = jwt.verify(token, '123abc');
+// console.log('decoded', decoded);
 
 // Hashing is  way to hide plain text passwords in databases
 // return value of SHA256(message) is a object, so we have to use toString()

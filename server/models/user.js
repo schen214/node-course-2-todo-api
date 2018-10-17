@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 // trim: trims all white space before and after
 // unique: verifies that email value is not the same as any other email in documents of a collection
@@ -52,6 +53,7 @@ UserSchema.methods.generateAuthToken = function () {
   var access = 'auth';
   var token = jwt.sign({_id: this._id.toHexString(), access}, 'abc123').toString();
 
+
   this.tokens = this.tokens.concat({access, token});
 
   return this.save().then(() => {
@@ -73,15 +75,32 @@ UserSchema.statics.findByToken = function (token) {
     return Promise.reject('INVALID TOKEN');
   }
 
-
   // We have to add  quotes around nested objects in 'key' values
   return this.findOne({
     _id: decoded._id,
     'tokens.token': token,
     'tokens.access': 'auth'
-
   });
 };
+
+// Using pre/post hooks (mongoose middleware) on the 'save' event so we can hash passwords before saving them to db..
+// Have to use 'function' keyword cause of 'this' additionally, must call next
+UserSchema.pre('save', function (next) {
+  // var user = this;
+
+  // Will be times where we save document (ex: update email) but never changed the password, this will cause program to rehash a hashed pw which will crash app.
+  // Document.prototype.isModified() returns true if its been modified or false if not. can pass in an args to check for change or if no args, it checks whole document
+  if (this.isModified('password')) {
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(this.password, salt, (err, hash) => {
+        this.password = hash;
+        next();
+      });
+    });
+  } else {
+    next();
+  }
+});
 
 var User = mongoose.model('User', UserSchema);
 
