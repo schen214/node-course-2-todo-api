@@ -47,12 +47,11 @@ UserSchema.methods.toJSON = function () {
 };
 
 // Used a regular function expression instead of arrow function because we need 'this' to be binded
-// 'this' will be variable for each instance of an individual document
+// 'this' will be variable for each instance of an individual 'user' document
 UserSchema.methods.generateAuthToken = function () {
   // var user = this;
   var access = 'auth';
   var token = jwt.sign({_id: this._id.toHexString(), access}, 'abc123').toString();
-
 
   this.tokens = this.tokens.concat({access, token});
 
@@ -75,7 +74,7 @@ UserSchema.statics.findByToken = function (token) {
     return Promise.reject('INVALID TOKEN');
   }
 
-  // We have to add  quotes around nested objects in 'key' values
+  // We HAVE to add  quotes around nested objects in 'key' values
   return this.findOne({
     _id: decoded._id,
     'tokens.token': token,
@@ -84,7 +83,7 @@ UserSchema.statics.findByToken = function (token) {
 };
 
 // Using pre/post hooks (mongoose middleware) on the 'save' event so we can hash passwords before saving them to db..
-// Have to use 'function' keyword cause of 'this' additionally, must call next
+// Have to use 'function' keyword cause of 'this'. additionally, must call next
 UserSchema.pre('save', function (next) {
   // var user = this;
 

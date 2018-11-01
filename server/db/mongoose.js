@@ -17,5 +17,5 @@ mongoose.set('useFindAndModify', false);
 mongoose.connect(process.env.MONGODB_URI, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect to database'));
 // mongoose.connect(db.localhost || db.mlab, {useNewUrlParser: true}).catch((e) => console.log('Unable to connect'));
 
-// mongoose: mongoose.. ES6 syntax:
+// mongoose: mongoose ES6 syntax:
 module.exports = {mongoose};

@@ -15,7 +15,7 @@ var app = express();
 const port = process.env.PORT;
 
 // setting up middleware with a method of body-parser's
-// bodyParser.json() will return a function that acts as middleware to send JSON to our express app.. converts JSON to an object
+// bodyParser.json() will be used  as middleware to parse JSON .. converts JSON to an object
 app.use(bodyParser.json());
 
 // Will use POST since we are doing CRUD operations..

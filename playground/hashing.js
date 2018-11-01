@@ -15,7 +15,7 @@ bcrypt.genSalt(10, (err, salt) => {
 
 var hashedPassword = '$2a$10$Tcu4P69Z4BSbJd4OqPj9X.KSFcmZB.9NtOTgQPo0R47AUgzUasSHy';
 
-// .compare(): Comparse if hashed password is same as plain text password. 1st arg is plain password, 2nd is hashed value, 3rd is callback where res is either true/false
+// // .compare(): Comparse if hashed password is same as plain text password. 1st arg is plain password, 2nd is hashed value, 3rd is callback where res is either true/false
 bcrypt.compare(password, hashedPassword, (err, res) => {
   console.log(res);
 });
@@ -33,6 +33,7 @@ bcrypt.compare(password, hashedPassword, (err, res) => {
 //
 // var decoded = jwt.verify(token, '123abc');
 // console.log('decoded', decoded);
+
 
 // Hashing is  way to hide plain text passwords in databases
 // return value of SHA256(message) is a object, so we have to use toString()
