@@ -154,6 +154,16 @@ app.post('/users/login', (req, res) => {
   });
 });
 
+app.delete('/users/me/token', authenticate, (req, res) => {
+  // 'removeToken()' will be an 'instance method' we create on user model..
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send('Successfuly removed token');
+
+  }, () => {
+    res.status(400).send();
+  });
+});
+
 app.listen(port, () => {
   console.log(`Started up on port ${port}`);
 });

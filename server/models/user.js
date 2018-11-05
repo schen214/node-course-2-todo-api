@@ -60,6 +60,18 @@ UserSchema.methods.generateAuthToken = function () {
   });
 };
 
+UserSchema.methods.removeToken = function (token) {
+  // var user = this;
+
+  // '$pull': A mongodb operator that allows you to remove items from array that matches certain criterias
+  // In this case, we've matched it so if the token passed in argument matches the token found in user (via authenticate), it will remove all properties of the 'tokens' array, not just it's 'token' property
+  return this.update({
+    $pull: {
+      tokens: {token}
+    }
+  });
+};
+
 // .statics is a object, similiar to .methods, with the difference being that every method you add, it becomes a 'model method' instead of 'instance method'
 UserSchema.statics.findByToken = function (token) {
   // var User = this;
