@@ -118,6 +118,7 @@ app.patch('/todos/:id', (req, res) => {
   });
 });
 
+// POST /users
 app.post('/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User({
@@ -127,6 +128,7 @@ app.post('/users', (req, res) => {
   // shorthand for above: var user = new User(body);
 
   user.save().then(() => {
+    // 'return' the method so that way if any errors, we will 'catch' it
     return user.generateAuthToken();
   }).then((token) => {
     // whenever a header begins with 'x-' it means its a custom header created by/for us and not native to HTTP
@@ -137,6 +139,19 @@ app.post('/users', (req, res) => {
 
 app.get('/users/me', authenticate, (req, res) => {
   res.send(req.user);
+});
+
+// POST /users/login
+app.post('/users/login', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+
+  User.findByCredentials(body.email, body.password).then((user) => {
+    return user.generateAuthToken().then((token) => {
+      res.header('x-auth', token).send(user);
+    });
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
 });
 
 app.listen(port, () => {

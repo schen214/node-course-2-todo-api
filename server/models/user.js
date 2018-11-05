@@ -82,6 +82,28 @@ UserSchema.statics.findByToken = function (token) {
   });
 };
 
+UserSchema.statics.findByCredentials = function (email, password) {
+  // var User = this;
+
+  return this.findOne({email}).then((user) => {
+    // if no user found, the rejected promise will be caught in 'server.js' catch block, along with the 'Promise.reject()' message/argument..
+    if (!user) {
+      return Promise.reject('Email Invalid, no user found!');
+    }
+
+    // Since bcrypt only take callbacks and we'd like to stick with Promises..
+    return new Promise((resolve, reject) => {
+      bcrypt.compare(password, user.password, (err, res) => {
+        if (res) {
+          resolve(user);;
+        } else {
+        reject()
+        }
+      });
+    });
+  });
+};
+
 // Using pre/post hooks (mongoose middleware) on the 'save' event so we can hash passwords before saving them to db..
 // Have to use 'function' keyword cause of 'this'. additionally, must call next
 UserSchema.pre('save', function (next) {

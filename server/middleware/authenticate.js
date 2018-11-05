@@ -16,7 +16,7 @@ var authenticate = (req, res, next) => {
     next();
   }).catch((e) => {
     // 401 status means unauthorized/authorization required
-    res.status(401).send();
+    res.status(401).send(e);
   });
 };
 
