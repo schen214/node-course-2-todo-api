@@ -65,7 +65,7 @@ UserSchema.methods.removeToken = function (token) {
 
   // '$pull': A mongodb operator that allows you to remove items from array that matches certain criterias
   // In this case, we've matched it so if the token passed in argument matches the token found in user (via authenticate), it will remove all properties of the 'tokens' array, not just it's 'token' property
-  return this.update({
+  return this.updateOne({
     $pull: {
       tokens: {token}
     }

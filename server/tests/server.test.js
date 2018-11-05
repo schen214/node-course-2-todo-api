@@ -22,14 +22,14 @@ describe('POST /todos', () => {
       .send({text})
       .expect(200)
       // Setting up a custom expect assertion
-      .expect((res) => {
-        expect(res.body.text).toBe(text);
+      .expect((response) => {
+        expect(response.body.text).toBe(text);
       })
       // Passing a callback instead to check what was passed in MongoDB collection instead of done
       // errors can be from either the status code or the res.body.text property is not equal to 'text'.
-      .end((err, res) => {
-        if (err) {
-          return done(err);
+      .end((error , response) => {
+        if (error) {
+          return done(error);
         }
 
         Todo.find({text}).then((todos) => {
@@ -302,6 +302,25 @@ describe('POST /users/login', () => {
           // Could also do :
           // expect(user.tokens.length).toBe(0);
           expect(user.tokens).toHaveLength(0);
+          done();
+        }).catch((e) => done(e));
+      });
+  });
+});
+
+describe('DELETE /users/me/token', () => {
+  it('should removed x-auth token on logout', (done) => {
+    request(app)
+      .delete('/users/me/token')
+      .set('x-auth', users[0].tokens[0].token)
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
+
+        User.findById(users[0]._id).then((user) => {
+          expect(user.tokens.length).toBe(0);
           done();
         }).catch((e) => done(e));
       });
