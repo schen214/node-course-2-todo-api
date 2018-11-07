@@ -10,7 +10,7 @@ const mongoose = require('mongoose');
 // };
 mongoose.Promise = global.Promise;
 
-// Gets rid of deprecated warnings..
+//Mongoose options rid of deprecated warnings..
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 

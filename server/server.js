@@ -20,10 +20,11 @@ app.use(bodyParser.json());
 
 // Will use POST since we are doing CRUD operations..
 // Takes two arguments, 1 is URL and 2nd is callback function
-app.post('/todos', (req, res) => {
+app.post('/todos', authenticate, (req, res) => {
   // console.log(req.body);
   var todo = new Todo({
-    text: req.body.text
+    text: req.body.text,
+    _creator: req.user._id,
   });
 
   // Status 400 : Bad Request
@@ -34,9 +35,12 @@ app.post('/todos', (req, res) => {
   });
 });
 
-app.get('/todos', (req, res) => {
-  Todo.find().then((todos) => {
+app.get('/todos', authenticate, (req, res) => {
+  Todo.find({
+    _creator: req.user._id
+  }).then((todos) => {
     // res.send(todos) will not be ideal since it is sending an array. Wouldn't be able to attach additional properties
+    // Here we are sending a property named '"todos"' with a value that is an object of arrays ( [{}] )...
     // EX: res.send({todos: todos, code: 'asdf'})
     res.send({todos});
   }).catch((e) => {
@@ -45,7 +49,7 @@ app.get('/todos', (req, res) => {
 });
 
 // :id creates a dynamic id variable for the parameter entered by user. It is accessible in the req object
-app.get('/todos/:id', (req, res) => {
+app.get('/todos/:id', authenticate, (req, res) => {
   // req.params is an object with a key  being 'id' and value being w/e user inputs
   var id = req.params.id;
 
@@ -53,7 +57,10 @@ app.get('/todos/:id', (req, res) => {
     return res.status(404).send();
   }
 
-  Todo.findById(id).then((todo) => {
+  Todo.findOne({
+    _id: id,
+    _creator: req.user._id
+  }).then((todo) => {
     if (!todo) {
       return res.status(404).send();
     }
@@ -64,20 +71,24 @@ app.get('/todos/:id', (req, res) => {
 });
 
 // .delete() takes 1st argument the route, and then a callback
-app.delete('/todos/:id', (req, res) => {
+app.delete('/todos/:id', authenticate, (req, res) => {
   var id = req.params.id;
 
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
   }
 
-  Todo.findOneAndDelete({_id: id}).then((todo) => {
+  Todo.findOneAndDelete({
+    _id: id,
+    _creator: req.user._id
+  }).then((todo) => {
     if (!todo) {
       return res.status(404).send();
     }
 
     res.send({todo});
   }).catch((e) => res.status(400).send());
+  // Code below 'findByIdAndRemove' is outdated..
   // Todo.findByIdAndRemove(id).then((todo) => {
   //   if (!todo) {
   //     return res.status(404).send();
@@ -88,7 +99,7 @@ app.delete('/todos/:id', (req, res) => {
 });
 
 // UPDATE Route:
-app.patch('/todos/:id', (req, res) => {
+app.patch('/todos/:id', authenticate, (req, res) => {
   var id = req.params.id;
   // Since we do not want the user to be able to update the 'completedAt' property (Program will take care of that once the 'completed' property is set), we will use lodash to help
   // .pick() creates an object composed of the objects properties predicate truthy for.. 1st argument is the source object, and 2nd arg is an array of properties to be picked:
@@ -106,8 +117,12 @@ app.patch('/todos/:id', (req, res) => {
     body.completedAt = null;
   }
 
-  // findByIdAndUpdate(): takes the ID as 1st arg (doesnt have to be ObjectID), 2nd arg takes 'update' options (what you are updating), 3rd arg takes an 'options' arg ('new' if set to true: returns the updated doc instead of original doc)
-  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+  // findByIdAndUpdate(): takes the ID as 1st arg (doesnt have to be type 'ObjectID'), 2nd arg takes 'update' options (what you are updating), 3rd arg takes an 'options' arg ('new' if set to true: returns the updated doc instead of original doc)
+  // Switched to 'findOneAndUpdate' later in the course due to addition of 'authenticate' middleware
+  Todo.findOneAndUpdate({
+    _id: id,
+    _creator: req.user._id
+  }, {$set: body}, {new: true}).then((todo) => {
     if (!todo) {
       return res.status(404).send();
     }
@@ -118,7 +133,6 @@ app.patch('/todos/:id', (req, res) => {
   });
 });
 
-// POST /users
 app.post('/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User({
