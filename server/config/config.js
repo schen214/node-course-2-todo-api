@@ -10,7 +10,7 @@ if (env === 'development' || env === 'test') {
 
   Object.keys(envConfig).forEach((key) => {
     process.env[key] = envConfig[key];
-  });                  config[env][key]
+  });                  
 }
 
 // if (env === 'development') {
